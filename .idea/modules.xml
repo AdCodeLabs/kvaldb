@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/distDatabase.iml" filepath="$PROJECT_DIR$/.idea/distDatabase.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/kvaldb.iml" filepath="$PROJECT_DIR$/.idea/kvaldb.iml" />
     </modules>
   </component>
 </project>

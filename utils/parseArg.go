@@ -34,7 +34,7 @@ func ParseCli(args []string) (map[string]string, error) {
 	}
 
 	argMap := make(map[string]string)
-	flags := []string{"--masterNode", "--port", "--leader", "--path"}
+	flags := []string{"--nodes", "--socket", "--path"}
 
 	for i := 1; i < len(args); i += 2 {
 		arg := args[i]
@@ -47,6 +47,9 @@ func ParseCli(args []string) (map[string]string, error) {
 			return nil, fmt.Errorf("value missing for argument: %s", arg)
 		}
 	}
+	// if _, ok := argMap["nodes"]; !ok {
+	// 	argMap["nodes"] = make([]string, 0)
+	// }
 
 	if err := checkMapValidity(argMap); err != nil {
 		return nil, err

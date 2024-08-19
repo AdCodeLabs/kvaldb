@@ -15,19 +15,15 @@ func main() {
 		log.Fatalf("Error parsing CLI arguments: %v", err)
 	}
 
-	isLeader := false
-	if val, exists := argMap["leader"]; exists && strings.ToLower(val) == "true" {
-		isLeader = true
+	var n []string
+	if len(argMap["nodes"]) != 0 {
+		n = strings.Split(argMap["nodes"], ",")
+	} else {
+		n = make([]string, 0)
 	}
-
-	currMaster := ""
-	if !isLeader {
-		currMaster = argMap["masterNode"]
-	}
-
-	node, err := nodes.NewNode(isLeader, argMap["port"], currMaster)
+	node, err := nodes.NewNode(argMap["socket"], n)
 	if err != nil {
-		log.Fatalf("Error creating node: %v", err)
+		log.Fatalf("Error while initializing the node: %v", err)
 	}
 
 	if err = node.Init(); err != nil {

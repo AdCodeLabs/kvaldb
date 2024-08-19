@@ -4,11 +4,15 @@ type NodeType string
 type MessageType string
 
 const (
-	Leader      NodeType    = "LEADER"
-	Follower    NodeType    = "FOLLOWER"
-	Candidate   NodeType    = "CANDIDATE"
-	HeartBeat   MessageType = "HEARTBEAT"
-	SynMessage  MessageType = "SYNMESSAGE"
-	VoteMessage MessageType = "VOTEREQUEST"
-	VoteAccept  MessageType = "VOTEACCEPT"
+	Leader    NodeType = "LEADER"
+	Follower  NodeType = "FOLLOWER"
+	Candidate NodeType = "CANDIDATE"
+
+	HeartBeat    MessageType = "HEARTBEAT"
+	SynMessage   MessageType = "SYNMESSAGE"
+	VoteMessage  MessageType = "VOTEREQUEST"
+	VoteAccept   MessageType = "VOTEACCEPT"
+	GetMaster    MessageType = "GETMASTER"
+	ReturnMaster MessageType = "RETURNMASTER"
+	NewMaster    MessageType = "NEWMASTER"
 )
