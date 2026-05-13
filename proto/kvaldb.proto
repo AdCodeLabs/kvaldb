@@ -1,0 +1,130 @@
+syntax = "proto3";
+
+package kvaldb.v1;
+
+option go_package = "github.com/adcodelabs/kvaldb/internal/rpc;kvaldbpb";
+
+// Internal Raft RPCs between nodes.
+service Raft {
+  rpc RequestVote(RequestVoteRequest) returns (RequestVoteResponse);
+  rpc AppendEntries(AppendEntriesRequest) returns (AppendEntriesResponse);
+}
+
+// Join a running cluster (contact leader's gRPC address).
+service Cluster {
+  rpc Join(JoinRequest) returns (JoinResponse);
+  // Metadata returns this node's view of the cluster (leader, term, role, peers, log positions).
+  rpc Metadata(MetadataRequest) returns (MetadataResponse);
+}
+
+// Client-facing key-value API.
+service KV {
+  rpc Get(GetRequest) returns (GetResponse);
+  rpc Set(SetRequest) returns (SetResponse);
+  rpc Delete(DeleteRequest) returns (DeleteResponse);
+}
+
+message RequestVoteRequest {
+  uint64 term = 1;
+  string candidate_id = 2;
+  uint64 last_log_index = 3;
+  uint64 last_log_term = 4;
+}
+
+message RequestVoteResponse {
+  uint64 term = 1;
+  bool vote_granted = 2;
+}
+
+message LogEntry {
+  uint64 index = 1;
+  uint64 term = 2;
+  uint32 type = 3; // 0 noop, 1 config, 2 set, 3 delete
+  bytes data = 4;   // JSON for config/set/delete payloads
+}
+
+message AppendEntriesRequest {
+  uint64 term = 1;
+  string leader_id = 2;
+  uint64 prev_log_index = 3;
+  uint64 prev_log_term = 4;
+  repeated LogEntry entries = 5;
+  uint64 leader_commit = 6;
+}
+
+message AppendEntriesResponse {
+  uint64 term = 1;
+  bool success = 2;
+  uint64 conflict_index = 3; // hint for decrementing nextIndex
+}
+
+message JoinRequest {
+  string node_id = 1;
+  string grpc_addr = 2; // address peers and clients use to reach this node
+}
+
+message JoinResponse {
+  bool ok = 1;
+  string error = 2;
+  uint64 term = 3;
+  string leader_id = 4;
+  string leader_addr = 5;
+}
+
+message MetadataRequest {}
+
+message ClusterPeer {
+  string node_id = 1;
+  string grpc_addr = 2;
+}
+
+message MetadataResponse {
+  string self_id = 1;
+  string self_addr = 2;
+  string role = 3; // follower | candidate | leader
+  uint64 current_term = 4;
+  string voted_for = 5;
+  string leader_id = 6;
+  string leader_addr = 7;
+  uint64 commit_index = 8;
+  uint64 last_applied = 9;
+  uint64 last_log_index = 10;
+  uint64 last_log_term = 11;
+  int32 peer_count = 12;
+  repeated ClusterPeer peers = 13;
+}
+
+message GetRequest {
+  string key = 1;
+}
+
+message GetResponse {
+  bool found = 1;
+  string value = 2;
+  string error = 3;
+  string leader_id = 4;
+  string leader_addr = 5;
+}
+
+message SetRequest {
+  string key = 1;
+  string value = 2;
+}
+
+message SetResponse {
+  bool ok = 1;
+  string error = 2;
+  string leader_id = 3;
+  string leader_addr = 4;
+}
+
+message DeleteRequest {
+  string key = 1;
+}
+
+message DeleteResponse {
+  bool ok = 1;
+  string error = 2;
+  string leader_id = 3;
+  string leader_addr = 4;
+}
